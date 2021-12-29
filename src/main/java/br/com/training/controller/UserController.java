@@ -2,7 +2,10 @@ package br.com.training.controller;
 
 import javax.validation.Valid;
 
+import br.com.training.controller.dto.UserForm;
+import br.com.training.controller.dto.UserResponse;
 import br.com.training.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,13 +21,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody @Valid User user) {
-        return userService.createUser(user);
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserForm dto) {
+        User usuario = userService.createUser(dto.userToDto());
+        return new ResponseEntity<UserResponse>(UserResponse.convertToDto(usuario), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{cpf}")
-    @ResponseStatus(HttpStatus.OK)
     public User getUser(@PathVariable String cpf) {
         return userService.findByCpf(cpf);
     }
