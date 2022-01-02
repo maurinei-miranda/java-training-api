@@ -17,27 +17,27 @@ import br.com.training.model.User;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+	@Autowired
+	private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserForm dto) {
-        User usuario = userService.createUser(dto.userToDto());
-        return new ResponseEntity<UserResponse>(UserResponse.convertToDto(usuario), HttpStatus.CREATED);
-    }
+	@PostMapping
+	public UserResponse createUser(@RequestBody @Valid UserForm userForm) {
+		return userService.createUser(userForm);
 
-    @GetMapping(value = "/{cpf}")
-    public User getUser(@PathVariable String cpf) {
-        return userService.findByCpf(cpf);
-    }
+	}
 
-    @PutMapping(value = "/{cpf}")
-    public User updateUser(@PathVariable String cpf, @RequestBody User newUser) {
-        return userService.updateUser(cpf, newUser);
-    }
+	@GetMapping(value = "/{cpf}")
+	public UserResponse getUser(@PathVariable String cpf) {
+		return userService.getUser(cpf);
+	}
 
-    @DeleteMapping(value = "/{cpf}")
-    public User deleteUser(@PathVariable String cpf) {
-        return userService.deleteUser(cpf);
-    }
+	@PutMapping(value = "/{cpf}")
+	public UserResponse updateUser(@PathVariable String cpf, @RequestBody UserForm userForm) {
+		return userService.updateUser(cpf, userForm);
+	}
+
+	@DeleteMapping(value = "/{cpf}")
+	public UserResponse deleteUser(@PathVariable String cpf) {
+		return userService.deleteUser(cpf);
+	}
 }

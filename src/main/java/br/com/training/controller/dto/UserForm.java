@@ -2,7 +2,6 @@ package br.com.training.controller.dto;
 
 import br.com.training.model.User;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 
@@ -20,7 +19,23 @@ public class UserForm {
         this.birthDate = birthDate;
     }
 
-    public User userToDto() {
-        return new User(name, email, cpf, birthDate);
+    public User dtoToUser() {
+        return new User(this.name, this.email, this.cpf, this.birthDate);
+    }
+    
+    public String getName() {
+    	return name;
+    }
+    
+    public String getEmail() {
+    	return email;
+    }
+    
+    public String getCpf() {
+    	return cpf;
+    }
+    
+    public LocalDate getBirthDate() {
+    	return birthDate;
     }
 }

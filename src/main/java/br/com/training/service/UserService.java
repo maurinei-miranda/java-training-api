@@ -6,48 +6,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 
+import br.com.training.controller.dto.UserForm;
+import br.com.training.controller.dto.UserResponse;
 import br.com.training.model.User;
 import br.com.training.repository.UserRepository;
 
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    public User createUser(@RequestBody @Valid User user) {
-        return userRepository.save(user);
-    }
+	public UserResponse createUser(@RequestBody @Valid UserForm userForm) {
+		User newUser = userForm.dtoToUser();
+		userRepository.save(newUser);
+		return UserResponse.convertToDto(newUser);
+	}
 
-    public User findByCpf(String cpf) {
-        try {
-            User user = userRepository.findByCpf(cpf);
-        } catch (NullPointerException e) {
-            System.out.println("User not found" + e);
-        }
-        return userRepository.findByCpf(cpf);
-    }
+	public UserResponse getUser(String cpf) {
+		User user = userRepository.findByCpf(cpf);
+		return UserResponse.convertToDto(user);
+	}
 
-    public User updateUser(String cpf, User newUser) {
-        try {
-            User user = userRepository.findByCpf(cpf);
-        } catch (
-                NullPointerException e) {
-            System.out.println("User not found" + e);
-        }
+	public UserResponse updateUser(String cpf, UserForm userForm) {
+		User newUser = userForm.dtoToUser();
+		User user = userRepository.findByCpf(cpf);
+		
+		user.setName(newUser.getName());
+		user.setEmail(newUser.getEmail());
+		user.setBirthDate(newUser.getBirthDate());
+		user.setCpf(newUser.getCpf());
+		
+		userRepository.save(user);
+		return UserResponse.convertToDto(userRepository.findByCpf(cpf));
+	}
 
-        User user = userRepository.findByCpf(cpf);
-        user.setName(newUser.getName());
-        user.setEmail(newUser.getEmail());
-        user.setBirthDate(newUser.getBirthDate());
-        user.setCpf(newUser.getCpf());
-
-        return userRepository.save(user);
-    }
-
-    public User deleteUser(String cpf) {
-        User user = userRepository.findByCpf(cpf);
-        userRepository.delete(user);
-        return user;
-    }
+	public UserResponse deleteUser(String cpf) {
+		
+		User user = userRepository.findByCpf(cpf);
+		userRepository.delete(user);
+		return UserResponse.convertToDto(user);
+	}
 }
