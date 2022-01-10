@@ -22,14 +22,14 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserForm dto) {
-        User usuario = userService.createUser(dto.userToDto());
-        return new ResponseEntity<UserResponse>(UserResponse.convertToDto(usuario), HttpStatus.CREATED);
+        User usuario = userService.createUser(dto.dtoToUser());
+        return new ResponseEntity<>(UserResponse.convertToDto(usuario), HttpStatus.CREATED);
     }
 
     @GetMapping(value = "/{cpf}")
     public ResponseEntity<UserResponse> getUser(@PathVariable String cpf) {
         User usuario = userService.findByCpf(cpf);
-        return new ResponseEntity<UserResponse>(UserResponse.convertToDto(usuario), HttpStatus.OK);
+        return new ResponseEntity<>(UserResponse.convertToDto(usuario), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{cpf}")
@@ -43,8 +43,8 @@ public class UserController {
         User toDelete = userService.findByCpf(cpf);
         if (toDelete != null) {
             userService.deleteUser(cpf);
-            return new ResponseEntity<UserResponse>(UserResponse.convertToDto(toDelete), HttpStatus.OK);
+            return new ResponseEntity<>(UserResponse.convertToDto(toDelete), HttpStatus.OK);
         }
-        return new ResponseEntity<UserResponse>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
