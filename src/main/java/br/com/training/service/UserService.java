@@ -20,11 +20,6 @@ public class UserService {
     }
 
     public User findByCpf(String cpf) {
-        try {
-            User user = userRepository.findByCpf(cpf);
-        } catch (NullPointerException e) {
-            System.out.println("User not found" + e);
-        }
         return userRepository.findByCpf(cpf);
     }
 

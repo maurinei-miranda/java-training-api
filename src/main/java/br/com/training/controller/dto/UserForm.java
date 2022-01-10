@@ -2,7 +2,6 @@ package br.com.training.controller.dto;
 
 import br.com.training.model.User;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 

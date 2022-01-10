@@ -27,17 +27,24 @@ public class UserController {
     }
 
     @GetMapping(value = "/{cpf}")
-    public User getUser(@PathVariable String cpf) {
-        return userService.findByCpf(cpf);
+    public ResponseEntity<UserResponse> getUser(@PathVariable String cpf) {
+        User usuario = userService.findByCpf(cpf);
+        return new ResponseEntity<UserResponse>(UserResponse.convertToDto(usuario), HttpStatus.OK);
     }
 
     @PutMapping(value = "/{cpf}")
-    public User updateUser(@PathVariable String cpf, @RequestBody User newUser) {
-        return userService.updateUser(cpf, newUser);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String cpf, @RequestBody User newUser) {
+        User usuario = userService.updateUser(cpf, newUser);
+        return new ResponseEntity<>(UserResponse.convertToDto(usuario), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{cpf}")
-    public User deleteUser(@PathVariable String cpf) {
-        return userService.deleteUser(cpf);
+    public ResponseEntity<UserResponse> deleteUser(@PathVariable String cpf) {
+        User toDelete = userService.findByCpf(cpf);
+        if (toDelete != null) {
+            userService.deleteUser(cpf);
+            return new ResponseEntity<UserResponse>(UserResponse.convertToDto(toDelete), HttpStatus.OK);
+        }
+        return new ResponseEntity<UserResponse>(HttpStatus.NOT_FOUND);
     }
 }
