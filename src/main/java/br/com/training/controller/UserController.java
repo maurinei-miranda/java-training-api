@@ -1,16 +1,15 @@
 package br.com.training.controller;
 
-import javax.validation.Valid;
-
 import br.com.training.controller.dto.UserForm;
 import br.com.training.controller.dto.UserResponse;
+import br.com.training.model.User;
 import br.com.training.service.UserService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import br.com.training.model.User;
+import javax.validation.Valid;
 
 @RestController
 @RestControllerAdvice
