@@ -1,9 +1,14 @@
 package br.com.training.service;
 
+import br.com.training.controller.dto.UserForm;
 import br.com.training.model.User;
 import br.com.training.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+import static java.util.Optional.*;
 
 @Service
 public class UserService {

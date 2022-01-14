@@ -3,6 +3,7 @@ package br.com.training.controller.dto;
 import br.com.training.model.User;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 public class UserResponse {
     private String name;
