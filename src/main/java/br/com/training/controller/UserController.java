@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RestControllerAdvice
@@ -20,31 +19,28 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserForm dto) {
-        User usuario = userService.createUser(dto.dtoToUser());
-        return new ResponseEntity<>(UserResponse.convertToDto(usuario), HttpStatus.CREATED);
-    }
-
     @GetMapping(value = "/{cpf}")
     public ResponseEntity<UserResponse> getUser(@PathVariable String cpf) {
-        User usuario = userService.findByCpf(cpf);
-        return new ResponseEntity<>(UserResponse.convertToDto(usuario), HttpStatus.OK);
+        User myUser = userService.findByCpf(cpf);
+        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserForm dto) {
+        User myUser = userService.save(dto.dtoToUser());
+        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{cpf}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable String cpf, @RequestBody User newUser) {
-        User usuario = userService.updateUser(cpf, newUser);
-        return new ResponseEntity<>(UserResponse.convertToDto(usuario), HttpStatus.OK);
+        User myUser = userService.update(cpf, newUser);
+        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{cpf}")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable String cpf) {
-        User toDelete = userService.findByCpf(cpf);
-        if (toDelete != null) {
-            userService.deleteUser(cpf);
-            return new ResponseEntity<>(UserResponse.convertToDto(toDelete), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        User myUser = userService.findByCpf(cpf);
+        userService.delete(myUser);
+        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
     }
 }
