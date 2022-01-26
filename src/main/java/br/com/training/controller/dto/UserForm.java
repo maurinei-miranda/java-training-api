@@ -3,7 +3,6 @@ package br.com.training.controller.dto;
 import br.com.training.model.User;
 import org.hibernate.validator.constraints.br.CPF;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
