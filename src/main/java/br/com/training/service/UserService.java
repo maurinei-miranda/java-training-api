@@ -33,7 +33,8 @@ public class UserService extends ApplicationExceptionHandler {
         return userRepository.save(myUser);
     }
 
-    public User delete(User userToDelete) {
+    public User delete(User user) {
+        User userToDelete = findByCpf(user.getCpf());
         userRepository.delete(userToDelete);
         return userToDelete;
     }
