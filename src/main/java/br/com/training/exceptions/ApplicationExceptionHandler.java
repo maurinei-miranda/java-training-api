@@ -1,5 +1,6 @@
 package br.com.training.exceptions;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,24 @@ import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiError> userAlreadyExist(ConstraintViolationException ex){
+        List<String> errors = new ArrayList<String>();
+        final String cpfAlreadyExist = "PUBLIC.UK_2QV8VMK5WXU215BEVLI5DERQ_INDEX_2 ON PUBLIC.USER(CPF)";
+        final String emailAlreadyExist = "PUBLIC.UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2 ON PUBLIC.USER(EMAIL)";
+
+        if (ex.getConstraintName().contains(cpfAlreadyExist)) {
+            errors.add("cpf already exist");
+        } else if (ex.getConstraintName().contains(emailAlreadyExist)) {
+            errors.add("email already exist");
+        } else {
+            errors.add(ex.getConstraintName());
+        }
+
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, errors, System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+    }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<ApiError> userNotFound(NoSuchElementException ex, HttpServletRequest request) {
