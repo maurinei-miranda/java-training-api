@@ -20,7 +20,7 @@ public class UserService extends ApplicationExceptionHandler {
 
     public User findByCpf(String cpf) {
         return userRepository.findByCpf(cpf).orElseThrow(
-                () -> new NoSuchElementException("cpf not found: " + cpf)
+                () -> new NoSuchElementException(cpfNotFoundError + cpf)
         );
     }
 
