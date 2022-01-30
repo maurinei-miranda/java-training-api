@@ -19,6 +19,9 @@ import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
+    public static String cpfAlreadyExistError = "cpf already exist";
+    public static String emailErrorMessage = "email already exist";
+    public static String cpfNotFoundError = "cpf not found: ";
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> userAlreadyExist(ConstraintViolationException ex){
@@ -27,9 +30,9 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         final String emailAlreadyExist = "PUBLIC.UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2 ON PUBLIC.USER(EMAIL)";
 
         if (ex.getConstraintName().contains(cpfAlreadyExist)) {
-            errors.add("cpf already exist");
+            errors.add(cpfAlreadyExistError);
         } else if (ex.getConstraintName().contains(emailAlreadyExist)) {
-            errors.add("email already exist");
+            errors.add(emailErrorMessage);
         } else {
             errors.add(ex.getConstraintName());
         }
