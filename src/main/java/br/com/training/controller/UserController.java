@@ -32,9 +32,10 @@ public class UserController {
     }
 
     @PutMapping(value = "/{cpf}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable String cpf, @RequestBody User newUser) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String cpf, @RequestBody @Valid UserForm dto) {
+        User newUser = dto.dtoToUser();
         User myUser = userService.update(cpf, newUser);
-        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
+        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(value = "/{cpf}")
