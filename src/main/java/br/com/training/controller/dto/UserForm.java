@@ -1,6 +1,10 @@
 package br.com.training.controller.dto;
 
 import br.com.training.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.validation.constraints.Email;
@@ -13,22 +17,35 @@ public class UserForm {
 
     @NotBlank
     private String name;
-    @CPF
-    private String cpf;
     @Email
     private String email;
+    @CPF
+    private String cpf;
     @NotNull
     private LocalDate birthDate;
 
     public UserForm(String name, String cpf, String email, LocalDate birthDate) {
         this.name = name;
-        this.cpf = cpf;
         this.email = email;
+        this.cpf = cpf;
         this.birthDate = birthDate;
     }
 
     public User dtoToUser() {
         return new User(this.name, this.email, this.cpf, this.birthDate);
+    }
+    
+    public String toJson(){
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        String userJson = null;
+        try {
+            userJson = objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return userJson;
     }
     
     public String getName() {
