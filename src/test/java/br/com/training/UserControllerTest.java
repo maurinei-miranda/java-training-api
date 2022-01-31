@@ -38,15 +38,16 @@ public class UserControllerTest {
     private UserService userService;
 
     final static UserForm defaultUser = new UserForm("Robert Greene", "23327434050", "user@gmail.com", LocalDate.parse("1994-03-31"));
-    final static UserForm invalidUser = new UserForm("", "23327434050", "user@gmail.com", LocalDate.parse("1994-03-31"));
-    final static String userToUpdate = "{\"name\":\"Geralt\",\"email\":\"user@gmail.com\",\"cpf\":\"23327434050\",\"birthDate\":\"1994-03-31\"}";
+    final static UserForm userWithBlankName = new UserForm("", "23327434050", "user@gmail.com", LocalDate.parse("1994-03-31"));
+    final static String badRequestString = "\"status\":\"BAD_REQUEST\",\"errors\":[\"name: must not be blank\"]";
 
     @Test
     public void testGetUserByCpfNotFound() throws Exception {
         NoSuchElementException expected = new NoSuchElementException("cpf not found: ");
-        when(userService.findByCpf(defaultUser.getCpf())).thenThrow(expected);
+        UserForm userForm = defaultUser;
+        when(userService.findByCpf(userForm.getCpf())).thenThrow(expected);
         this.mockMvc.perform(
-                        get("/users/" + defaultUser.getCpf())
+                        get("/users/" + userForm.getCpf())
                 )
                 .andExpect(content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -81,7 +82,7 @@ public class UserControllerTest {
 
     @Test
     public void testCreateUserBlankName() throws Exception {
-        UserForm user = invalidUser;
+        UserForm user = userWithBlankName;
         this.mockMvc.perform(
                         post("/users")
                                 .contentType("application/json")
@@ -89,7 +90,7 @@ public class UserControllerTest {
                 )
                 .andExpect(content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(content().string(containsString("\"status\":\"BAD_REQUEST\",\"errors\":[\"name: must not be blank\"]")));
+                .andExpect(content().string(containsString(badRequestString)));
     }
 
     @Test
@@ -99,7 +100,6 @@ public class UserControllerTest {
         this.mockMvc.perform(
                         post("/users")
                                 .contentType("application/json")
-                                //TODO ADD ObjectMapper
                                 .content(user.toJson())
                 )
                 .andExpect(content().contentType("application/json"))
@@ -123,22 +123,72 @@ public class UserControllerTest {
 
     @Test
     public void testUpdateUserSuccess() throws Exception {
-        //TODO see the possibility of new builders;
-        UserForm oldUser = defaultUser;
-        User changedUser = oldUser.dtoToUser();
-        changedUser.setName("Peppa Pig");
-        UserForm userUpdated = new UserForm(changedUser.getName(), changedUser.getCpf(), changedUser.getEmail(), changedUser.getBirthDate());
-
-        when(userService.findByCpf(oldUser.getCpf())).thenReturn(oldUser.dtoToUser());
-        when(userService.update(oldUser.getCpf(), changedUser)).thenReturn(changedUser);
+        User changedUser = defaultUser.dtoToUser();
+        changedUser.setName("John Galt");
+        UserForm userFormUpdated = new UserForm(changedUser);
+        when(userService.update(defaultUser.getCpf(), changedUser)).thenReturn(changedUser);
         this.mockMvc.perform(
-                        put("/users/" + oldUser.getCpf())
+                        put("/users/" + defaultUser.getCpf())
                                 .contentType("application/json")
-                                .content(userUpdated.toJson())
+                                .content(userFormUpdated.toJson())
                 )
                 .andExpect(content().contentType("application/json"))
-                .andExpect(status().isConflict())
-                .andExpect(content().string(userUpdated.toJson()));
+                .andExpect(status().isOk())
+                .andExpect(content().string(userFormUpdated.toJson()));
+    }
 
+    @Test
+    public void testUpdateUserNotFound() throws Exception {
+        User changedUser = defaultUser.dtoToUser();
+        changedUser.setName("John Galt");
+        UserForm userFormUpdated = new UserForm(changedUser);
+        NoSuchElementException expected = new NoSuchElementException(cpfNotFoundError + changedUser.getCpf());
+        when(userService.update(defaultUser.getCpf(), changedUser)).thenThrow(expected);
+        this.mockMvc.perform(
+                        put("/users/" + defaultUser.getCpf())
+                                .contentType("application/json")
+                                .content(userFormUpdated.toJson())
+                )
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(expected.getMessage())));
+    }
+
+    @Test
+    public void testUpdateInvalidArgument() throws Exception {
+        UserForm invalidUser = userWithBlankName;
+        this.mockMvc.perform(
+                        put("/users/" + invalidUser.getCpf())
+                                .contentType("application/json")
+                                .content(invalidUser.toJson())
+                )
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString(badRequestString)));
+    }
+
+    @Test
+    public void testDeleteUserSuccess() throws Exception {
+        UserForm userForm = defaultUser;
+        when(userService.findByCpf(userForm.getCpf())).thenReturn(userForm.dtoToUser());
+        this.mockMvc.perform(
+                        delete("/users/" + userForm.getCpf())
+                                .contentType("application/json")
+                )
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testDeleteUserNotFound() throws Exception {
+        UserForm userForm = defaultUser;
+        NoSuchElementException expected = new NoSuchElementException(cpfNotFoundError + userForm.getCpf());
+        when(userService.findByCpf(userForm.getCpf())).thenThrow(expected);
+        this.mockMvc.perform(
+                        delete("/users/" + userForm.getCpf())
+                                .contentType("application/json")
+                )
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isNotFound());
     }
 }
