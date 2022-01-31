@@ -31,11 +31,18 @@ public class UserForm {
         this.birthDate = birthDate;
     }
 
+    public UserForm(User user) {
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.cpf = user.getCpf();
+        this.birthDate = user.getBirthDate();
+    }
+
     public User dtoToUser() {
         return new User(this.name, this.email, this.cpf, this.birthDate);
     }
-    
-    public String toJson(){
+
+    public String toJson() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -47,20 +54,20 @@ public class UserForm {
         }
         return userJson;
     }
-    
+
     public String getName() {
-    	return name;
+        return name;
     }
-    
+
     public String getEmail() {
-    	return email;
+        return email;
     }
-    
+
     public String getCpf() {
-    	return cpf;
+        return cpf;
     }
-    
+
     public LocalDate getBirthDate() {
-    	return birthDate;
+        return birthDate;
     }
 }
