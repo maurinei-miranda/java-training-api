@@ -35,7 +35,7 @@ public class UserController {
     public ResponseEntity<UserResponse> updateUser(@PathVariable String cpf, @RequestBody @Valid UserForm dto) {
         User newUser = dto.dtoToUser();
         User myUser = userService.update(cpf, newUser);
-        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{cpf}")
