@@ -1,13 +1,18 @@
 package br.com.training.controller.dto;
 
 import br.com.training.model.User;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.time.LocalDate;
 
 public class UserResponse {
+    @ApiModelProperty(value = "User's full name")
     private String name;
+    @ApiModelProperty(value = "User email")
     private String email;
+    @ApiModelProperty(value = "User's Individual Registration. (CPF)")
     private String cpf;
+    @ApiModelProperty(value = "User's date of birth.")
     private LocalDate birthDate;
 
     public static UserResponse convertToDto(User user) {
