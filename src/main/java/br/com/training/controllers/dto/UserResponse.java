@@ -1,6 +1,6 @@
-package br.com.training.controller.dto;
+package br.com.training.controllers.dto;
 
-import br.com.training.model.User;
+import br.com.training.models.User;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.time.LocalDate;

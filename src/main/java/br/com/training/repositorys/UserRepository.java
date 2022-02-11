@@ -1,6 +1,6 @@
-package br.com.training.repository;
+package br.com.training.repositorys;
 
-import br.com.training.model.User;
+import br.com.training.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

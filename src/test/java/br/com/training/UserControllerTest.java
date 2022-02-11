@@ -1,9 +1,9 @@
 package br.com.training;
 
-import br.com.training.controller.UserController;
-import br.com.training.controller.dto.UserForm;
-import br.com.training.model.User;
-import br.com.training.service.UserService;
+import br.com.training.controllers.UserController;
+import br.com.training.controllers.dto.UserForm;
+import br.com.training.models.User;
+import br.com.training.services.UserService;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;

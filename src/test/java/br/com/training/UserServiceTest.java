@@ -1,8 +1,8 @@
 package br.com.training;
 
-import br.com.training.model.User;
-import br.com.training.repository.UserRepository;
-import br.com.training.service.UserService;
+import br.com.training.models.User;
+import br.com.training.repositorys.UserRepository;
+import br.com.training.services.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

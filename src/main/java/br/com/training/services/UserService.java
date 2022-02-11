@@ -1,8 +1,9 @@
-package br.com.training.service;
+package br.com.training.services;
 
 import br.com.training.exceptions.ApplicationExceptionHandler;
-import br.com.training.model.User;
-import br.com.training.repository.UserRepository;
+import br.com.training.models.User;
+import br.com.training.repositorys.UserRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class UserService extends ApplicationExceptionHandler {
         );
     }
 
-    public User update(String cpf, User newUser) {
+    public User update(String cpf, @NotNull User newUser) {
         User myUser = findByCpf(cpf);
         myUser.setName(newUser.getName());
         myUser.setEmail(newUser.getEmail());
@@ -33,7 +34,7 @@ public class UserService extends ApplicationExceptionHandler {
         return userRepository.save(myUser);
     }
 
-    public User delete(User user) {
+    public User delete(@NotNull User user) {
         User userToDelete = findByCpf(user.getCpf());
         userRepository.delete(userToDelete);
         return userToDelete;

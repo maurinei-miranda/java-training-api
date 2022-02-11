@@ -1,4 +1,4 @@
-package br.com.training.model;
+package br.com.training.models;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

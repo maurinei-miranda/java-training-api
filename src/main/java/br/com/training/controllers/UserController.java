@@ -1,9 +1,9 @@
-package br.com.training.controller;
+package br.com.training.controllers;
 
-import br.com.training.controller.dto.UserForm;
-import br.com.training.controller.dto.UserResponse;
-import br.com.training.model.User;
-import br.com.training.service.UserService;
+import br.com.training.controllers.dto.UserForm;
+import br.com.training.controllers.dto.UserResponse;
+import br.com.training.models.User;
+import br.com.training.services.UserService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
