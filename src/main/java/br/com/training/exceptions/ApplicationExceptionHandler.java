@@ -42,7 +42,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ApiError> userNotFound(NoSuchElementException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> entityNotFound(NoSuchElementException ex, HttpServletRequest request) {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getMessage(), System.currentTimeMillis());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
