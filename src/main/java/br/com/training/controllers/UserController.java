@@ -1,7 +1,7 @@
 package br.com.training.controllers;
 
-import br.com.training.controllers.dto.UserForm;
-import br.com.training.controllers.dto.UserResponse;
+import br.com.training.dto.UserForm;
+import br.com.training.dto.UserResponse;
 import br.com.training.models.User;
 import br.com.training.services.UserService;
 import io.swagger.annotations.ApiResponse;
@@ -28,7 +28,7 @@ public class UserController {
                     @ApiResponse(code = 500, message = "An exception has occurred.")
             }
     )
-    @GetMapping(value = "/{cpf}", produces = "application/json", consumes = "application/json")
+    @GetMapping(value = "/{cpf}", produces = "application/json")
     public ResponseEntity<UserResponse> getUser(@PathVariable String cpf) {
         User myUser = userService.findByCpf(cpf);
         return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
