@@ -1,4 +1,4 @@
-package br.com.training.controllers.dto;
+package br.com.training.dto;
 
 import br.com.training.models.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
