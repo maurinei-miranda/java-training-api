@@ -2,6 +2,7 @@ package br.com.training.controllers;
 
 import br.com.training.dto.UserForm;
 import br.com.training.dto.UserResponse;
+import br.com.training.interfaces.MapStructMapper;
 import br.com.training.models.User;
 import br.com.training.services.UserService;
 import io.swagger.annotations.ApiResponse;
@@ -20,6 +21,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MapStructMapper mapStructMapper;
 
     @ApiResponses(value =
             {
@@ -43,7 +47,7 @@ public class UserController {
     )
     @PostMapping(produces = "application/json", consumes = "application/json")
     public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserForm dto) {
-        User myUser = userService.save(dto.dtoToUser());
+        User myUser = userService.save(mapStructMapper.userDtoToUser(dto));
         return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.CREATED);
     }
 
@@ -56,8 +60,7 @@ public class UserController {
     )
     @PutMapping(value = "/{cpf}", produces = "application/json", consumes = "application/json")
     public ResponseEntity<UserResponse> updateUser(@PathVariable String cpf, @RequestBody @Valid UserForm dto) {
-        User newUser = dto.dtoToUser();
-        User myUser = userService.update(cpf, newUser);
+        User myUser = userService.update(cpf, mapStructMapper.userDtoToUser(dto));
         return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
     }
 

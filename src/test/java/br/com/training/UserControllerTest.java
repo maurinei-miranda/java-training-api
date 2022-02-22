@@ -2,6 +2,7 @@ package br.com.training;
 
 import br.com.training.controllers.UserController;
 import br.com.training.dto.UserForm;
+import br.com.training.interfaces.MapStructMapper;
 import br.com.training.models.User;
 import br.com.training.services.UserService;
 import org.hibernate.exception.ConstraintViolationException;
@@ -34,6 +35,9 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private MapStructMapper mapStructMapper;
+
     @MockBean
     private UserService userService;
 
@@ -57,7 +61,7 @@ public class UserControllerTest {
     @Test
     public void testGetUserByCpfSuccess() throws Exception {
         UserForm user = defaultUser;
-        when(userService.findByCpf(user.getCpf())).thenReturn(user.dtoToUser());
+        when(userService.findByCpf(user.getCpf())).thenReturn(mapStructMapper.userDtoToUser(user));
         this.mockMvc.perform(
                         get("/users/" + user.getCpf())
                 )
@@ -69,7 +73,7 @@ public class UserControllerTest {
     @Test
     public void testCreateUserSuccess() throws Exception {
         UserForm user = defaultUser;
-        when(userService.save(user.dtoToUser())).thenReturn(user.dtoToUser());
+        when(userService.save(mapStructMapper.userDtoToUser(user))).thenReturn(mapStructMapper.userDtoToUser(user));
         this.mockMvc.perform(
                         post("/users")
                                 .contentType("application/json")
@@ -96,7 +100,8 @@ public class UserControllerTest {
     @Test
     public void testCreateUserCpfAlreadyExist() throws Exception {
         UserForm user = defaultUser;
-        when(userService.save(user.dtoToUser())).thenThrow(new ConstraintViolationException(cpfAlreadyExistError, new SQLException(), cpfAlreadyExistError));
+        when(userService.save(mapStructMapper.userDtoToUser(user)))
+                .thenThrow(new ConstraintViolationException(cpfAlreadyExistError, new SQLException(), cpfAlreadyExistError));
         this.mockMvc.perform(
                         post("/users")
                                 .contentType("application/json")
@@ -110,7 +115,8 @@ public class UserControllerTest {
     @Test
     public void testCreateUserEmailAlreadyExist() throws Exception {
         UserForm user = defaultUser;
-        when(userService.save(user.dtoToUser())).thenThrow(new ConstraintViolationException(emailErrorMessage, new SQLException(), emailErrorMessage));
+        when(userService.save(mapStructMapper.userDtoToUser(user)))
+                .thenThrow(new ConstraintViolationException(emailErrorMessage, new SQLException(), emailErrorMessage));
         this.mockMvc.perform(
                         post("/users")
                                 .contentType("application/json")
@@ -123,7 +129,7 @@ public class UserControllerTest {
 
     @Test
     public void testUpdateUserSuccess() throws Exception {
-        User changedUser = defaultUser.dtoToUser();
+        User changedUser = mapStructMapper.userDtoToUser(defaultUser);
         changedUser.setName("John Galt");
         UserForm userFormUpdated = new UserForm(changedUser);
         when(userService.update(defaultUser.getCpf(), changedUser)).thenReturn(changedUser);
@@ -139,7 +145,7 @@ public class UserControllerTest {
 
     @Test
     public void testUpdateUserNotFound() throws Exception {
-        User changedUser = defaultUser.dtoToUser();
+        User changedUser = mapStructMapper.userDtoToUser(defaultUser);
         changedUser.setName("John Galt");
         UserForm userFormUpdated = new UserForm(changedUser);
         NoSuchElementException expected = new NoSuchElementException(cpfNotFoundError + changedUser.getCpf());
@@ -170,7 +176,7 @@ public class UserControllerTest {
     @Test
     public void testDeleteUserSuccess() throws Exception {
         UserForm userForm = defaultUser;
-        when(userService.findByCpf(userForm.getCpf())).thenReturn(userForm.dtoToUser());
+        when(userService.findByCpf(userForm.getCpf())).thenReturn(mapStructMapper.userDtoToUser(userForm));
         this.mockMvc.perform(
                         delete("/users/" + userForm.getCpf())
                                 .contentType("application/json")
