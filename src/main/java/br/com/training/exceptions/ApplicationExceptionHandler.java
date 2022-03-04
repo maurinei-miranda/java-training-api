@@ -19,20 +19,24 @@ import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler {
-    public static String cpfAlreadyExistError = "cpf already exist";
+    public static String cpfAlreadyExistMessage = "cpf already exist";
     public static String emailErrorMessage = "email already exist";
-    public static String cpfNotFoundError = "cpf not found: ";
+    public static String cpfNotFoundMessage = "cpf not found: ";
+    public static String vaccineAlreadyExistMessage = "vaccine already exist";
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiError> userAlreadyExist(ConstraintViolationException ex){
+    public ResponseEntity<ApiError> resourceViolation(ConstraintViolationException ex) {
         List<String> errors = new ArrayList<String>();
         final String cpfAlreadyExist = "PUBLIC.UK_2QV8VMK5WXU215BEVLI5DERQ_INDEX_2 ON PUBLIC.USER(CPF)";
         final String emailAlreadyExist = "PUBLIC.UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2 ON PUBLIC.USER(EMAIL)";
+        final String vaccineAlreadyExist = "PUBLIC.UK_I7TJE2XF0KSD3MDASOXQ6QKFB_INDEX_3 ON PUBLIC.VACCINE(NAME)";
 
         if (ex.getConstraintName().contains(cpfAlreadyExist)) {
-            errors.add(cpfAlreadyExistError);
+            errors.add(cpfAlreadyExistMessage);
         } else if (ex.getConstraintName().contains(emailAlreadyExist)) {
             errors.add(emailErrorMessage);
+        } else if (ex.getConstraintName().contains(vaccineAlreadyExist)) {
+            errors.add(vaccineAlreadyExistMessage);
         } else {
             errors.add(ex.getConstraintName());
         }
