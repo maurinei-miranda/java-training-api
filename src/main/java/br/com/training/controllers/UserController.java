@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RestControllerAdvice
@@ -25,6 +26,17 @@ public class UserController {
     @Autowired
     private MapStructMapper mapStructMapper;
 
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Return a list of users")
+            }
+    )
+    @GetMapping(value = "/all", produces = "application/json")
+    public ResponseEntity<List<UserResponse>> findAllUsers() {
+        List<UserResponse> userList = userService.findAllUsers();
+        return new ResponseEntity<>(userList, HttpStatus.OK);
+    }
+
     @ApiResponses(value =
             {
                     @ApiResponse(code = 200, message = "Return a user."),
@@ -33,9 +45,9 @@ public class UserController {
             }
     )
     @GetMapping(value = "/{cpf}", produces = "application/json")
-    public ResponseEntity<UserResponse> getUser(@PathVariable String cpf) {
-        User myUser = userService.findByCpf(cpf);
-        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
+    public ResponseEntity<UserResponse> findByCpf(@PathVariable String cpf) {
+        User user = userService.findByCpf(cpf);
+        return new ResponseEntity<>(mapStructMapper.userToUserResponse(user), HttpStatus.OK);
     }
 
     @ApiResponses(value =
@@ -46,9 +58,10 @@ public class UserController {
             }
     )
     @PostMapping(produces = "application/json", consumes = "application/json")
-    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserForm dto) {
-        User myUser = userService.save(mapStructMapper.userDtoToUser(dto));
-        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.CREATED);
+    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserForm userForm) {
+        User user = mapStructMapper.userDtoToUser(userForm);
+        userService.save(user);
+        return new ResponseEntity<>(mapStructMapper.userToUserResponse(user), HttpStatus.CREATED);
     }
 
     @ApiResponses(value =
@@ -59,9 +72,10 @@ public class UserController {
             }
     )
     @PutMapping(value = "/{cpf}", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable String cpf, @RequestBody @Valid UserForm dto) {
-        User myUser = userService.update(cpf, mapStructMapper.userDtoToUser(dto));
-        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable String cpf, @RequestBody @Valid UserForm userForm) {
+        User user = mapStructMapper.userDtoToUser(userForm);
+        userService.update(cpf, user);
+        return new ResponseEntity<>(mapStructMapper.userToUserResponse(user), HttpStatus.OK);
     }
 
     @ApiResponses(value =
@@ -73,8 +87,8 @@ public class UserController {
     )
     @DeleteMapping(value = "/{cpf}", produces = "application/json")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable String cpf) {
-        User myUser = userService.findByCpf(cpf);
-        userService.delete(myUser);
-        return new ResponseEntity<>(UserResponse.convertToDto(myUser), HttpStatus.OK);
+        User user = userService.findByCpf(cpf);
+        userService.delete(user);
+        return new ResponseEntity<>(mapStructMapper.userToUserResponse(user), HttpStatus.OK);
     }
 }

@@ -1,8 +1,9 @@
 package br.com.training.controllers;
 
 import br.com.training.dto.VaccineForm;
+import br.com.training.dto.VaccineResponse;
+import br.com.training.interfaces.MapStructMapper;
 import br.com.training.models.Vaccine;
-import br.com.training.services.DiseaseService;
 import br.com.training.services.VaccineService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -17,29 +18,18 @@ import java.util.List;
 @RestControllerAdvice
 @RequestMapping("/vaccines")
 public class VaccineController {
-    //TODO Change ResponseEntity Type.
     @Autowired
     private VaccineService vaccineService;
 
     @Autowired
-    private DiseaseService diseaseService;
-
-    @GetMapping("/diseases")
-    public ResponseEntity<Object> findAll() {
-        return new ResponseEntity<>(diseaseService.findAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/diseases/1")
-    public ResponseEntity<Object> findByName() {
-        return new ResponseEntity<>(diseaseService.findByName("Rabies - WHO"), HttpStatus.OK);
-    }
+    private MapStructMapper mapStructMapper;
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return a list of vaccines"),
             @ApiResponse(code = 404, message = "Vaccine not found"),
     })
     @GetMapping(produces = "application/json")
-    public ResponseEntity<Object> findAllVaccines() {
+    public ResponseEntity<List<Vaccine>> findAllVaccines() {
         List<Vaccine> vaccinesList = vaccineService.findAllVaccines();
         return new ResponseEntity<>(vaccinesList, HttpStatus.OK);
     }
@@ -49,35 +39,42 @@ public class VaccineController {
             @ApiResponse(code = 404, message = "Vaccine not found.")
     })
     @GetMapping(value = "/{name}", produces = "application/json")
-    public ResponseEntity<Object> findByName(@PathVariable String name) {
+    public ResponseEntity<VaccineResponse> findByName(@PathVariable String name) {
         Vaccine vaccine = vaccineService.findByName(name);
-        return new ResponseEntity<>(vaccine, HttpStatus.OK);
+        return new ResponseEntity<>(mapStructMapper.vaccineToVaccineResponse(vaccine), HttpStatus.OK);
     }
 
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Return created vaccine.")
     })
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Object> saveAVaccine(@RequestBody VaccineForm vaccineForm) {
-        Vaccine vaccine = vaccineService.save(vaccineForm);
-        return new ResponseEntity<>(vaccine, HttpStatus.CREATED);
+    public ResponseEntity<VaccineResponse> createVaccine(@RequestBody VaccineForm vaccineForm) {
+        Vaccine vaccine = mapStructMapper.vaccineFormToVaccine(vaccineForm);
+        vaccineService.save(vaccine);
+        return new ResponseEntity<>(mapStructMapper.vaccineToVaccineResponse(vaccine), HttpStatus.CREATED);
     }
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Vaccine updated."),
             @ApiResponse(code = 404, message = "Vaccine not found.")
     })
-    @PutMapping(value = "/{name}", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Object> updateVaccine(@PathVariable String name, @RequestBody VaccineForm vaccineForm) {
-        vaccineService.update(name, vaccineForm);
-        return new ResponseEntity<>(vaccineForm, HttpStatus.OK);
+    @PutMapping(value = "/{name}", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<VaccineResponse> updateVaccine(@PathVariable String name, @RequestBody VaccineForm vaccineForm) {
+        Vaccine vaccine = mapStructMapper.vaccineFormToVaccine(vaccineForm);
+        Vaccine newVaccine = vaccineService.update(name, vaccine);
+        return new ResponseEntity<>(mapStructMapper.vaccineToVaccineResponse(newVaccine), HttpStatus.OK);
 
     }
 
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 204, message = "Vaccine deleted")
+            }
+    )
     @DeleteMapping(value = "/{name}", produces = "application/json")
-    public ResponseEntity<Object> deleteVaccine(@PathVariable String name) {
+    public ResponseEntity<VaccineResponse> deleteVaccine(@PathVariable String name) {
         Vaccine vaccine = vaccineService.findByName(name);
-        vaccineService.delete(vaccine.getName());
-        return new ResponseEntity<>(vaccine, HttpStatus.OK);
+        vaccineService.delete(vaccine);
+        return new ResponseEntity<>(mapStructMapper.vaccineToVaccineResponse(vaccine), HttpStatus.OK);
     }
 }
