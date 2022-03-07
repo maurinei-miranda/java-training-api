@@ -25,8 +25,8 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("br.com.training.controller"))
-                .paths(PathSelectors.ant("/users/**"))
+                .apis(RequestHandlerSelectors.basePackage("br.com.training.controllers"))
+                .paths(PathSelectors.ant("/**"))
                 .build()
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.POST, responseMessageForGET())
@@ -45,9 +45,9 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Simple API for user registration.")
-                .description("A POC of an API with Java and Spring Boot.")
-                .version("1.0.0")
+                .title("Multiple API's for vaccine management.")
+                .description("This application allows the management of users, vaccines and details of diseases obtained through an external API. And the application of vaccines to registered users.")
+                .version("2.0.0")
                 .license("Apache License Version 2.0")
                 .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0")
                 .contact(new Contact("Maurinei Miranda", "https://github.com/maurinei-miranda", "maurinei.cabral@tgmail.com"))
