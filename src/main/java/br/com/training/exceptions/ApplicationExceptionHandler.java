@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,7 +25,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> resourceViolation(ConstraintViolationException ex) {
-        List<String> errors = new ArrayList<String>();
+        List<String> errors = new ArrayList<>();
         final String cpfAlreadyExist = "PUBLIC.UK_2QV8VMK5WXU215BEVLI5DERQ_INDEX_2 ON PUBLIC.USER(CPF)";
         final String emailAlreadyExist = "PUBLIC.UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2 ON PUBLIC.USER(EMAIL)";
         final String vaccineAlreadyExist = "PUBLIC.UK_I7TJE2XF0KSD3MDASOXQ6QKFB_INDEX_3 ON PUBLIC.VACCINE(NAME)";
@@ -46,9 +45,15 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<ApiError> entityNotFound(NoSuchElementException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> entityNotFound(NoSuchElementException ex) {
         ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, ex.getMessage(), System.currentTimeMillis());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+    }
+
+    @ExceptionHandler(VaccineRestrictions.class)
+    public ResponseEntity<ApiError> restrictionFound(VaccineRestrictions ex){
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), System.currentTimeMillis());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
     @Override
@@ -57,7 +62,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
             HttpHeaders headers,
             HttpStatus status,
             WebRequest request) {
-        List<String> errors = new ArrayList<String>();
+        List<String> errors = new ArrayList<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
             errors.add(error.getField() + ": " + error.getDefaultMessage());
         }
