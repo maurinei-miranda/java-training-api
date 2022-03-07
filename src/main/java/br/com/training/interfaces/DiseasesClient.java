@@ -1,6 +1,5 @@
 package br.com.training.interfaces;
 
-import br.com.training.models.Disease;
 import br.com.training.models.Root;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,5 +8,4 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface DiseasesClient {
     @GetMapping("/diseases")
     Root findAll();
-    
 }
