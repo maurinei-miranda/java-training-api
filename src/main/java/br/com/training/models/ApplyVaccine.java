@@ -11,10 +11,12 @@ public class ApplyVaccine {
     private Long id;
     @Column(nullable = false)
     private LocalDate date;
-    @Column(nullable = false)
-    private Long userId;
-    @Column(nullable = false)
-    private Long vaccineId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    @ManyToOne
+    @JoinColumn(name = "vaccine_id")
+    private Vaccine vaccine;
 
     public Long getId() {
         return id;
@@ -32,19 +34,19 @@ public class ApplyVaccine {
         this.date = date;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Long getVaccineId() {
-        return vaccineId;
+    public Vaccine getVaccine() {
+        return vaccine;
     }
 
-    public void setVaccineId(Long vaccineId) {
-        this.vaccineId = vaccineId;
+    public void setVaccine(Vaccine vaccine) {
+        this.vaccine = vaccine;
     }
 }

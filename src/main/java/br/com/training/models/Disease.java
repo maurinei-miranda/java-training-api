@@ -24,6 +24,13 @@ public class Disease {
         return facts;
     }
 
+    public String getDiseaseDescription(){
+        if (facts.size() > 0) {
+            return facts.get(0);
+        } else
+            return "N/A";
+    }
+
     public void setFacts(ArrayList<String> facts) {
         this.facts = facts;
     }

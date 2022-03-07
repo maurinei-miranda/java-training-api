@@ -1,5 +1,8 @@
 package br.com.training.models;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -28,9 +31,11 @@ public class Vaccine implements Serializable {
     private int dosesAmount;
 
     @Column(nullable = false)
+    @CreationTimestamp
     private LocalDate createdAt;
 
     @Column
+    @UpdateTimestamp
     private LocalDate updatedAt;
 
     public Vaccine() {
