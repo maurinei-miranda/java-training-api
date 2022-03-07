@@ -42,10 +42,6 @@ public class UserForm {
         this.birthDate = user.getBirthDate();
     }
 
-    public User dtoToUser() {
-        return new User(this.name, this.email, this.cpf, this.birthDate);
-    }
-
     public String toJson() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());

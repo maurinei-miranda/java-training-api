@@ -15,10 +15,6 @@ public class UserResponse {
     @ApiModelProperty(value = "User's date of birth.")
     private LocalDate birthDate;
 
-    public static UserResponse convertToDto(User user) {
-        return new UserResponse(user.getName(), user.getEmail(), user.getCpf(), user.getBirthDate());
-    }
-
     public UserResponse(String name, String email, String cpf, LocalDate birthDate) {
         this.name = name;
         this.email = email;

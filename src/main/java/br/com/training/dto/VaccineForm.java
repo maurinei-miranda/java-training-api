@@ -3,6 +3,8 @@ package br.com.training.dto;
 
 import br.com.training.models.Vaccine;
 import io.swagger.annotations.ApiModelProperty;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -27,9 +29,11 @@ public class VaccineForm {
 
     @ApiModelProperty(value = "Vaccine created at.")
     @NotNull
+    @CreationTimestamp
     private LocalDate createdAt;
 
     @ApiModelProperty(value = "Vaccine updated at.")
+    @UpdateTimestamp
     private LocalDate updatedAt;
 
     public VaccineForm(String name, String diseaseName, int minimumAge, int dosesAmount, LocalDate createdAt, LocalDate updatedAt) {
@@ -41,55 +45,27 @@ public class VaccineForm {
         this.updatedAt = updatedAt;
     }
 
-    public Vaccine vaccineFormToVaccine() {
-        return new Vaccine(this.name, this.diseaseName, "descp", this.minimumAge, this.dosesAmount, this.createdAt, this.updatedAt);
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDiseaseName() {
         return diseaseName;
     }
 
-    public void setDiseaseName(String diseaseName) {
-        this.diseaseName = diseaseName;
-    }
-
     public int getMinimumAge() {
         return minimumAge;
-    }
-
-    public void setMinimumAge(int minimumAge) {
-        this.minimumAge = minimumAge;
     }
 
     public int getDosesAmount() {
         return dosesAmount;
     }
 
-    public void setDosesAmount(int dosesAmount) {
-        this.dosesAmount = dosesAmount;
-    }
-
     public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDate getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }
