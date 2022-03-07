@@ -1,12 +1,16 @@
 package br.com.training.services;
 
+import br.com.training.dto.UserResponse;
 import br.com.training.exceptions.ApplicationExceptionHandler;
+import br.com.training.interfaces.MapStructMapper;
 import br.com.training.models.User;
 import br.com.training.repositorys.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -15,27 +19,39 @@ public class UserService extends ApplicationExceptionHandler {
     @Autowired
     private UserRepository userRepository;
 
-    public User save(User user) {
-        return userRepository.save(user);
-    }
+    @Autowired
+    private MapStructMapper mapStructMapper;
 
     public User findByCpf(String cpf) {
         return userRepository.findByCpf(cpf)
-                .orElseThrow(() -> new NoSuchElementException(cpfNotFoundError + cpf));
+                .orElseThrow(() -> new NoSuchElementException(cpfNotFoundMessage + cpf));
     }
 
-    public User update(String cpf, @NotNull User newUser) {
+    public List<UserResponse> findAllUsers() {
+        List<User> listUsers = userRepository.findAll();
+        List<UserResponse> listResponse = new ArrayList();
+        for (User item : listUsers) {
+            UserResponse mapped = mapStructMapper.userToUserResponse(item);
+            listResponse.add(mapped);
+        }
+        return listResponse;
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    public void update(String cpf, @NotNull User newUser) {
         User myUser = findByCpf(cpf);
         myUser.setName(newUser.getName());
         myUser.setEmail(newUser.getEmail());
         myUser.setBirthDate(newUser.getBirthDate());
         myUser.setCpf(newUser.getCpf());
-        return userRepository.save(myUser);
+        userRepository.save(myUser);
     }
 
-    public User delete(@NotNull User user) {
+    public void delete(@NotNull User user) {
         User userToDelete = findByCpf(user.getCpf());
         userRepository.delete(userToDelete);
-        return userToDelete;
     }
 }

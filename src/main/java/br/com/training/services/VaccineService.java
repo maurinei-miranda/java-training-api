@@ -1,6 +1,5 @@
 package br.com.training.services;
 
-import br.com.training.dto.VaccineForm;
 import br.com.training.exceptions.ApplicationExceptionHandler;
 import br.com.training.models.Disease;
 import br.com.training.models.Vaccine;
@@ -23,41 +22,38 @@ public class VaccineService extends ApplicationExceptionHandler {
 
     public Vaccine findByName(String name) {
         return vaccineRepository.findByName(name)
-                .orElseThrow(() -> new NoSuchElementException("Vaccine not found " + name));
+                .orElseThrow(() -> new NoSuchElementException("Vaccine '" + name + "' not found"));
     }
 
     public List<Vaccine> findAllVaccines() {
         return vaccineRepository.findAll();
     }
 
-    public Vaccine save(VaccineForm vaccineForm) {
-        Vaccine vaccine = vaccineForm.vaccineFormToVaccine();
-        Disease disease = diseaseService.findByName(vaccineForm.getDiseaseName())
-                .orElseThrow(() -> new NoSuchElementException("Disease '" + vaccineForm.getDiseaseName() + "' not found "));
+    public void save(Vaccine vaccine) {
+        Disease disease = diseaseService.findByName(vaccine.getDiseaseName())
+                .orElseThrow(() -> new NoSuchElementException("Disease '" + vaccine.getDiseaseName() + "' not found "));
         vaccine.setDiseaseName(disease.getName());
-        vaccine.setDiseaseDescription(disease.getFacts().get(0));
+        vaccine.setDiseaseDescription(disease.getDiseaseDescription());
         vaccineRepository.save(vaccine);
-        return vaccine;
     }
 
-    public void update(String vaccineName, @NotNull VaccineForm vaccineForm) {
+    public Vaccine update(String vaccineName, @NotNull Vaccine vaccine) {
+        Disease disease = diseaseService.findByName(vaccine.getDiseaseName())
+                .orElseThrow(() -> new NoSuchElementException("Disease '" + vaccine.getDiseaseName() + "' not found "));
+
         Vaccine oldVaccine = findByName(vaccineName);
-        Vaccine newVaccine = vaccineForm.vaccineFormToVaccine();
 
-        oldVaccine.setName(newVaccine.getName());
-        oldVaccine.setDosesAmount(newVaccine.getDosesAmount());
-        oldVaccine.setDiseaseName(newVaccine.getDiseaseName());
-        oldVaccine.setDiseaseDescription(newVaccine.getDiseaseDescription());
-        oldVaccine.setMinimumAge(newVaccine.getMinimumAge());
-
+        oldVaccine.setName(vaccine.getName());
+        oldVaccine.setDosesAmount(vaccine.getDosesAmount());
+        oldVaccine.setDiseaseName(disease.getName());
+        oldVaccine.setDiseaseDescription(disease.getDiseaseDescription());
+        oldVaccine.setMinimumAge(vaccine.getMinimumAge());
         vaccineRepository.save(oldVaccine);
+        return oldVaccine;
     }
 
-    public void delete(String name) {
-        Vaccine vaccine = findByName(name);
-        vaccineRepository.delete(vaccine);
+    public void delete(Vaccine vaccine) {
+        Vaccine deleteVaccine = findByName(vaccine.getName());
+        vaccineRepository.delete(deleteVaccine);
     }
-
-    //TODO criar metodo checkDisease()
-
 }
