@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -25,6 +27,7 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserService userService;
+
 
     @Test(expected = NoSuchElementException.class)
     public void testFindUserByCpfFail() {
@@ -46,6 +49,16 @@ public class UserServiceTest {
     }
 
     @Test
+    public void testFindAllUsers() {
+        List<User> users = new ArrayList<>();
+        users.add(defaultUser);
+        users.add(updatedData);
+        when(userRepository.findAll()).thenReturn(users);
+        userService.findAllUsers();
+        verify(userRepository, times(1)).findAll();
+    }
+
+    @Test
     public void testSaveSuccess() {
         User user = defaultUser;
         userService.save(user);
@@ -63,9 +76,7 @@ public class UserServiceTest {
     @Test
     public void testDeleteUserNotFound() {
         User user = defaultUser;
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
-            userService.delete(user);
-        });
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> userService.delete(user));
         verify(userRepository, times(1)).findByCpf(user.getCpf());
         assertEquals("cpf not found: " + user.getCpf(), exception.getMessage());
     }
@@ -83,9 +94,7 @@ public class UserServiceTest {
     public void testUpdateUserNotFound() {
         User user = defaultUser;
         User updated = updatedData;
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> {
-            userService.update(user.getCpf(), updated);
-        });
+        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () -> userService.update(user.getCpf(), updated));
         verify(userRepository, times(1)).findByCpf(user.getCpf());
         assertEquals("cpf not found: " + user.getCpf(), exception.getMessage());
     }
