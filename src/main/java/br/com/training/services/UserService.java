@@ -1,15 +1,12 @@
 package br.com.training.services;
 
-import br.com.training.dto.UserResponse;
 import br.com.training.exceptions.ApplicationExceptionHandler;
-import br.com.training.interfaces.MapStructMapper;
 import br.com.training.models.User;
 import br.com.training.repositorys.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -19,22 +16,14 @@ public class UserService extends ApplicationExceptionHandler {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private MapStructMapper mapStructMapper;
-
     public User findByCpf(String cpf) {
         return userRepository.findByCpf(cpf)
                 .orElseThrow(() -> new NoSuchElementException(cpfNotFoundMessage + cpf));
     }
 
-    public List<UserResponse> findAllUsers() {
+    public List<User> findAllUsers() {
         List<User> listUsers = userRepository.findAll();
-        List<UserResponse> listResponse = new ArrayList();
-        for (User item : listUsers) {
-            UserResponse mapped = mapStructMapper.userToUserResponse(item);
-            listResponse.add(mapped);
-        }
-        return listResponse;
+        return listUsers;
     }
 
     public void save(User user) {
