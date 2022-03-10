@@ -18,11 +18,14 @@ public interface MapStructMapper {
 
     Vaccine vaccineFormToVaccine(VaccineForm vaccineForm);
 
+    //TODO implement
     String userDtoToJson(UserForm userForm);
 
     VaccineResponse vaccineToVaccineResponse(Vaccine vaccine);
 
     ApplyVaccineResponse applyVaccineToApplyResponse(ApplyVaccine applyVaccine);
+
+    List<UserResponse> userListToUserResponse(List<User> userList);
 
     List<ApplyVaccineResponse> map(List<ApplyVaccine> applyVaccinesList);
 }
