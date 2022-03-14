@@ -33,8 +33,9 @@ public class UserController {
     )
     @GetMapping(value = "/all", produces = "application/json")
     public ResponseEntity<List<UserResponse>> findAllUsers() {
-        List<UserResponse> userList = userService.findAllUsers();
-        return new ResponseEntity<>(userList, HttpStatus.OK);
+        List<User> userList = userService.findAllUsers();
+        List<UserResponse> userResponseList = mapStructMapper.userListToUserResponse(userList);
+        return new ResponseEntity<>(userResponseList, HttpStatus.OK);
     }
 
     @ApiResponses(value =
