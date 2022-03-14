@@ -47,12 +47,6 @@ public class MapStructMapperImpl implements MapStructMapper {
         );
     }
 
-    @Override
-    //TODO pending to Json
-    public String userDtoToJson(UserForm userForm) {
-        User user = new User(userForm.getName(), userForm.getEmail(), userForm.getCpf(), userForm.getBirthDate());
-        return "";
-    }
 
     @Override
     public VaccineResponse vaccineToVaccineResponse(Vaccine vaccine) {
