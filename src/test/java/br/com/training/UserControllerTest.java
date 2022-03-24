@@ -95,7 +95,7 @@ public class UserControllerTest {
     @DisplayName(value = "POST /user create fail")
     public void postUserInvalid_Return500() throws Exception {
         LocalDate birthDate = LocalDate.parse("1994-03-31");
-        User invalidUserEmail = new User("Maurinei", "email-invalido", "31794150021", birthDate);
+        User invalidUserEmail = new User("Maurinei", "invalid-email", "31794150021", birthDate);
         String json = objectMapper.writeValueAsString(invalidUserEmail);
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "invalid email", System.currentTimeMillis());
@@ -127,4 +127,28 @@ public class UserControllerTest {
                 .andExpect(content().contentType("application/json"))
                 .andExpect(content().string(json));
     }
+
+    @Test
+    @DisplayName(value = "PUT /update user fail, user not found")
+    public void putUserFail_Return500() throws Exception {
+        LocalDate birthDate = LocalDate.parse("1994-03-31");
+        User user = new User("Maurinei", "maurinei.develop@gmail.com", "31794150021", birthDate);
+        UserForm userForm = new UserForm("Maurinei", "invalid-email", "31794150021", birthDate);
+        String requestJson = objectMapper.writeValueAsString(userForm);
+
+        doReturn(user).when(userService).findByCpf(user.getCpf());
+
+        mockMvc.perform(put(usersUrl + user.getCpf())
+                        .contentType("application/json")
+                        .content(requestJson)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.errors").value("email: must be a well-formed email address"));
+
+    }
+
+
+    // TODO deleteUserSucess_Return200
+    // TODO deleteUserFailt_Return404
 }
