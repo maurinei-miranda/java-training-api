@@ -6,6 +6,7 @@ import br.com.training.exceptions.ApiError;
 import br.com.training.interfaces.MapStructMapper;
 import br.com.training.models.User;
 import br.com.training.services.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -148,7 +149,18 @@ public class UserControllerTest {
 
     }
 
+    @Test
+    @DisplayName(value = "DELETE /delete user sucess")
+    public void deleteUserSucess_Return200 () throws Exception {
+        LocalDate birthDate = LocalDate.parse("1994-03-31");
+        User user = new User("Maurinei", "maurinei.develop@gmail.com", "31794150021", birthDate);
+        doReturn(user).when(userService).findByCpf(user.getCpf());
+        String responseJson = objectMapper.writeValueAsString(mapStructMapper.userToUserResponse(user));;
+        mockMvc.perform(delete(usersUrl+user.getCpf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(responseJson));
 
-    // TODO deleteUserSucess_Return200
+    }
+
     // TODO deleteUserFailt_Return404
 }
