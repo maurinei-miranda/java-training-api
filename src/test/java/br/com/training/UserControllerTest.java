@@ -1,5 +1,6 @@
 package br.com.training;
 
+import br.com.training.dto.UserForm;
 import br.com.training.dto.UserResponse;
 import br.com.training.exceptions.ApiError;
 import br.com.training.interfaces.MapStructMapper;
@@ -24,8 +25,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -33,26 +33,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 public class UserControllerTest {
 
+    final String usersUrl = "/users/";
     @MockBean
     private UserService userService;
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private MapStructMapper mapStructMapper;
-
     @Autowired
     private ObjectMapper objectMapper;
-
-    final String usersUrl = "/users/";
-
-//    @Test
-//    public void contextLoads() throws Exception {
-//        System.out.println(userController);
-//        assertThat(userController).isNotNull();
-//    }
-
 
     @Test
     @DisplayName(value = "GET /users get a user")
@@ -106,7 +95,7 @@ public class UserControllerTest {
     @DisplayName(value = "POST /user create fail")
     public void postUserInvalid_Return500() throws Exception {
         LocalDate birthDate = LocalDate.parse("1994-03-31");
-        User invalidUserEmail = new User("Maurinei", "maurinei-invalido", "31794150021", birthDate);
+        User invalidUserEmail = new User("Maurinei", "email-invalido", "31794150021", birthDate);
         String json = objectMapper.writeValueAsString(invalidUserEmail);
 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "invalid email", System.currentTimeMillis());
@@ -119,5 +108,23 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.errors").value("email: must be a well-formed email address"));
+    }
+
+    @Test
+    @DisplayName(value = "PUT /update user success")
+    public void putUserSuccess_Return200() throws Exception {
+        LocalDate birthDate = LocalDate.parse("1994-03-31");
+        User user = new User("Maurinei", "maurinei.develop@gmail.com", "31794150021", birthDate);
+        UserForm userForm = new UserForm("Maurinei", "newemail@gmail.com", "31794150021", birthDate);
+        String json = objectMapper.writeValueAsString(userForm);
+        doReturn(user).when(userService).findByCpf(user.getCpf());
+
+        mockMvc.perform(put(usersUrl + user.getCpf())
+                        .contentType("application/json")
+                        .content(json)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType("application/json"))
+                .andExpect(content().string(json));
     }
 }
