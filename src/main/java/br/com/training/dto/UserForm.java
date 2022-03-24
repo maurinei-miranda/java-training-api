@@ -28,7 +28,7 @@ public class UserForm {
     @NotNull
     private LocalDate birthDate;
 
-    public UserForm(String name, String cpf, String email, LocalDate birthDate) {
+    public UserForm(String name, String email, String cpf, LocalDate birthDate) {
         this.name = name;
         this.email = email;
         this.cpf = cpf;
