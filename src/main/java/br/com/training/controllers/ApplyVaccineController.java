@@ -44,10 +44,14 @@ public class ApplyVaccineController {
         return new ResponseEntity<>(mapStructMapper.applyVaccineToApplyResponse(applyVaccine), HttpStatus.CREATED);
     }
 
-   /* @DeleteMapping
-    public ResponseEntity<ApplyVaccineResponse> delete(@RequestParam String cpf){
-        List<ApplyVaccine> applyVaccine = applyVaccineService.findByUserCpf(cpf);
-        applyVaccineService.delete(applyVaccine.remove());
-        return new ResponseEntity(mapStructMapper.applyVaccineToApplyResponse(applyVaccine), HttpStatus.OK);
-    }*/
+    @DeleteMapping
+    public ResponseEntity<ApplyVaccineResponse> delete(@RequestParam String cpf) {
+        List<ApplyVaccine> applyVaccineList = applyVaccineService.findByUserCpf(cpf);
+        if (applyVaccineList.size() <= 0) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+
+        }
+        applyVaccineService.delete(applyVaccineList.get(applyVaccineList.size()-1));
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }
