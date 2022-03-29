@@ -6,7 +6,6 @@ import br.com.training.exceptions.ApiError;
 import br.com.training.interfaces.MapStructMapper;
 import br.com.training.models.User;
 import br.com.training.services.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -23,9 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
+import static br.com.training.exceptions.ApplicationExceptionHandler.cpfNotFoundMessage;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -53,10 +53,7 @@ public class UserControllerTest {
         listUsers.add(user);
         doReturn(listUsers).when(userService).findAllUsers();
 
-        mockMvc.perform(get(usersUrl + "all"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-        ;
+        mockMvc.perform(get(usersUrl + "all")).andExpect(status().isOk()).andExpect(content().contentType("application/json"));
 
     }
 
@@ -69,10 +66,7 @@ public class UserControllerTest {
 
         doReturn(user).when(userService).findByCpf(user.getCpf());
         String json = objectMapper.writeValueAsString(userResponse);
-        mockMvc.perform(get(usersUrl + user.getCpf()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(content().string(json));
+        mockMvc.perform(get(usersUrl + user.getCpf())).andExpect(status().isOk()).andExpect(content().contentType("application/json")).andExpect(content().string(json));
     }
 
     @Test
@@ -84,12 +78,7 @@ public class UserControllerTest {
 
         doNothing().when(userService).save(user);
         String json = objectMapper.writeValueAsString(userResponse);
-        mockMvc.perform(post(usersUrl)
-                        .contentType("application/json")
-                        .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(content().string(json));
+        mockMvc.perform(post(usersUrl).contentType("application/json").content(json)).andExpect(status().isCreated()).andExpect(content().contentType("application/json")).andExpect(content().string(json));
     }
 
     @Test
@@ -102,13 +91,7 @@ public class UserControllerTest {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "invalid email", System.currentTimeMillis());
         ResponseEntity<Object> response = ResponseEntity.status(500).body(apiError);
         //doThrow(toThrow).when(userService).save(invalidUserEmail);
-        mockMvc.perform(post(usersUrl)
-                        .contentType("application/json")
-                        .content(json)
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.errors").value("email: must be a well-formed email address"));
+        mockMvc.perform(post(usersUrl).contentType("application/json").content(json)).andExpect(status().isBadRequest()).andExpect(content().contentType("application/json")).andExpect(jsonPath("$.errors").value("email: must be a well-formed email address"));
     }
 
     @Test
@@ -120,17 +103,11 @@ public class UserControllerTest {
         String json = objectMapper.writeValueAsString(userForm);
         doReturn(user).when(userService).findByCpf(user.getCpf());
 
-        mockMvc.perform(put(usersUrl + user.getCpf())
-                        .contentType("application/json")
-                        .content(json)
-                )
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(content().string(json));
+        mockMvc.perform(put(usersUrl + user.getCpf()).contentType("application/json").content(json)).andExpect(status().isOk()).andExpect(content().contentType("application/json")).andExpect(content().string(json));
     }
 
     @Test
-    @DisplayName(value = "PUT /update user fail, user not found")
+    @DisplayName(value = "PUT /update user fail, email invalid")
     public void putUserFail_Return500() throws Exception {
         LocalDate birthDate = LocalDate.parse("1994-03-31");
         User user = new User("Maurinei", "maurinei.develop@gmail.com", "31794150021", birthDate);
@@ -139,28 +116,28 @@ public class UserControllerTest {
 
         doReturn(user).when(userService).findByCpf(user.getCpf());
 
-        mockMvc.perform(put(usersUrl + user.getCpf())
-                        .contentType("application/json")
-                        .content(requestJson)
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType("application/json"))
-                .andExpect(jsonPath("$.errors").value("email: must be a well-formed email address"));
+        mockMvc.perform(put(usersUrl + user.getCpf()).contentType("application/json").content(requestJson)).andExpect(status().isBadRequest()).andExpect(content().contentType("application/json")).andExpect(jsonPath("$.errors").value("email: must be a well-formed email address"));
 
     }
 
     @Test
     @DisplayName(value = "DELETE /delete user sucess")
-    public void deleteUserSucess_Return200 () throws Exception {
+    public void deleteUserSucess_Return200() throws Exception {
         LocalDate birthDate = LocalDate.parse("1994-03-31");
         User user = new User("Maurinei", "maurinei.develop@gmail.com", "31794150021", birthDate);
         doReturn(user).when(userService).findByCpf(user.getCpf());
-        String responseJson = objectMapper.writeValueAsString(mapStructMapper.userToUserResponse(user));;
-        mockMvc.perform(delete(usersUrl+user.getCpf()))
-                .andExpect(status().isOk())
-                .andExpect(content().string(responseJson));
+        String responseJson = objectMapper.writeValueAsString(mapStructMapper.userToUserResponse(user));
+        mockMvc.perform(delete(usersUrl + user.getCpf())).andExpect(status().isOk()).andExpect(content().string(responseJson));
 
     }
 
-    // TODO deleteUserFailt_Return404
+    @Test
+    @DisplayName(value = "DELETE /delete user fail - not found")
+    public void deleteUserFail_Return404() throws Exception {
+        LocalDate birthDate = LocalDate.parse("1994-03-31");
+        User user = new User("Maurinei", "maurinei.develop@gmail.com", "31794150021", birthDate);
+        doThrow(new NoSuchElementException(cpfNotFoundMessage + user.getCpf())).when(userService).findByCpf(user.getCpf());
+        mockMvc.perform(delete(usersUrl + user.getCpf())).andExpect(status().isNotFound()).andExpect(jsonPath("$.errors").value(cpfNotFoundMessage + user.getCpf()));
+
+    }
 }
