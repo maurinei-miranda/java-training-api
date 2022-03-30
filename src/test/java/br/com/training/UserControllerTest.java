@@ -45,7 +45,7 @@ public class UserControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName(value = "GET /users get a user")
+    @DisplayName(value = "GET /users get a user list")
     public void getUsersList_Return200() throws Exception {
         LocalDate birthDate = LocalDate.parse("1994-03-31");
         User user = new User("Maurinei", "maurinei.develop@gmail.com", "31794150021", birthDate);
@@ -121,8 +121,8 @@ public class UserControllerTest {
     }
 
     @Test
-    @DisplayName(value = "DELETE /delete user sucess")
-    public void deleteUserSucess_Return200() throws Exception {
+    @DisplayName(value = "DELETE /delete user success")
+    public void deleteUserSuccess_Return200() throws Exception {
         LocalDate birthDate = LocalDate.parse("1994-03-31");
         User user = new User("Maurinei", "maurinei.develop@gmail.com", "31794150021", birthDate);
         doReturn(user).when(userService).findByCpf(user.getCpf());
