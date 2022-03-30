@@ -52,6 +52,12 @@ public class VaccineServiceTest {
     }
 
     @Test
+    public void testFindAllVaccines_Success(){
+        vaccineService.findAllVaccines();
+        verify(vaccineRepository, times(1)).findAll();
+    }
+
+    @Test
     public void testSaveVaccine_Return201() {
         Vaccine vaccine = new Vaccine();
         Disease disease = new Disease();
@@ -82,5 +88,46 @@ public class VaccineServiceTest {
         vaccine.setDiseaseName("Covid-19");
 
         vaccineService.save(vaccine);
+    }
+
+    @Test
+    public void testUpdateVaccine_Success() {
+        LocalDate localDate = LocalDate.parse("2022-03-28");
+        Vaccine vaccine = new Vaccine("Pfizer",
+                "Covid-19",
+                "Coronavirus disease (COVID-19) is an infectious disease caused by the SARS-CoV-2 virus.",
+                5,
+                4,
+                localDate,
+                localDate);
+
+        Disease disease = new Disease();
+        ArrayList<String> facts = new ArrayList<>();
+
+        disease.setName("Covid-19");
+        disease.setFacts(facts);
+        facts.add("Coronavirus disease (COVID-19) is an infectious disease caused by the SARS-CoV-2 virus.");
+
+        vaccine.setDiseaseName("Covid-19");
+
+        when(diseaseService.findByName("Covid-19")).thenReturn(Optional.of(disease));
+        when(vaccineRepository.findByName(vaccine.getName())).thenReturn(Optional.of(vaccine));
+        vaccineService.update("Pfizer", vaccine);
+        verify(vaccineRepository, times(1)).save(vaccine);
+    }
+
+    @Test
+    public void testDeleteUser_Success() {
+        LocalDate localDate = LocalDate.parse("2022-03-28");
+        Vaccine vaccine = new Vaccine("Pfizer",
+                "Covid-19",
+                "Coronavirus disease (COVID-19) is an infectious disease caused by the SARS-CoV-2 virus.",
+                5,
+                4,
+                localDate,
+                localDate);
+        when(vaccineRepository.findByName("Pfizer")).thenReturn(Optional.of(vaccine));
+        vaccineService.delete(vaccine);
+        verify(vaccineRepository, times(1)).delete(vaccine);
     }
 }
