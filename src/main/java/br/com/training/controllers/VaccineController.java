@@ -29,9 +29,10 @@ public class VaccineController {
             @ApiResponse(code = 404, message = "Vaccine not found"),
     })
     @GetMapping(produces = "application/json")
-    public ResponseEntity<List<Vaccine>> findAllVaccines() {
+    public ResponseEntity<List<VaccineResponse>> findAllVaccines() {
         List<Vaccine> vaccinesList = vaccineService.findAllVaccines();
-        return new ResponseEntity<>(vaccinesList, HttpStatus.OK);
+        List<VaccineResponse> vaccineResponseList = mapStructMapper.vaccineListToVaccineResponseList(vaccinesList);
+        return new ResponseEntity<>(vaccineResponseList, HttpStatus.OK);
     }
 
     @ApiResponses(value = {
