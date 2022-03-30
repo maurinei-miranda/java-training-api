@@ -62,6 +62,16 @@ public class MapStructMapperImpl implements MapStructMapper {
     }
 
     @Override
+    public List<VaccineResponse> vaccineListToVaccineResponseList(List<Vaccine> vaccineList) {
+        List<VaccineResponse> listResponse = new ArrayList();
+        for (Vaccine item : vaccineList) {
+            VaccineResponse mapped = vaccineToVaccineResponse(item);
+            listResponse.add(mapped);
+        }
+        return listResponse;
+    }
+
+    @Override
     public ApplyVaccineResponse applyVaccineToApplyResponse(ApplyVaccine applyVaccine) {
         return new ApplyVaccineResponse(
                 applyVaccine.getUser().getCpf(),

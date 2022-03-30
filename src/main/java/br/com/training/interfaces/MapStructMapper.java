@@ -23,6 +23,8 @@ public interface MapStructMapper {
 
     VaccineResponse vaccineToVaccineResponse(Vaccine vaccine);
 
+    List<VaccineResponse> vaccineListToVaccineResponseList(List<Vaccine> vaccineList);
+
     // TODO new Interface
     ApplyVaccineResponse applyVaccineToApplyResponse(ApplyVaccine applyVaccine);
 
