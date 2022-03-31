@@ -1,5 +1,6 @@
 package br.com.training;
 
+import br.com.training.dto.VaccineForm;
 import br.com.training.dto.VaccineResponse;
 import br.com.training.interfaces.MapStructMapper;
 import br.com.training.models.Vaccine;
@@ -21,8 +22,8 @@ import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @SpringBootTest
@@ -78,10 +79,63 @@ public class VaccineControllerTest {
         VaccineResponse vaccineResponse = mapStructMapper.vaccineToVaccineResponse(vaccine);
         String responseContent = objectMapper.writeValueAsString(vaccineResponse);
         mockMvc.perform(
-                        get(vaccinesUrl+vaccine.getName()))
+                        get(vaccinesUrl + vaccine.getName()))
                 .andExpect(content().contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(responseContent));
     }
 
+
+    @Test
+    @DisplayName(value = "POST /vaccines save a vaccine")
+    public void postUser_Return201() throws Exception {
+        LocalDate localDate = LocalDate.parse("2022-03-31");
+        VaccineForm vaccineForm = new VaccineForm("Pfizer",
+                "Covid-19",
+                10,
+                3,
+                localDate,
+                localDate);
+
+        VaccineResponse vaccineResponse = new VaccineResponse("Pfizer",
+                "Covid-19",
+                "N/A",
+                10,
+                3,
+                localDate,
+                localDate);
+
+        String jsonContent = objectMapper.writeValueAsString(vaccineForm);
+        String jsonResponse = objectMapper.writeValueAsString(vaccineResponse);
+        mockMvc.perform(
+                        post(vaccinesUrl)
+                                .contentType("application/json")
+                                .content(jsonContent))
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isCreated())
+                .andExpect(content().string(jsonResponse));
+    }
+
+    @Test
+    @DisplayName(value = "POST /vaccines post vaccines, bad request")
+    public void postUser_Return400() throws Exception {
+        LocalDate localDate = LocalDate.parse("2022-03-31");
+        VaccineForm vaccineForm = new VaccineForm("",
+                "Malaria - WHO",
+                10,
+                3,
+                localDate,
+                localDate);
+        String jsonContent = objectMapper.writeValueAsString(vaccineForm);
+
+        mockMvc.perform(
+                        post(vaccinesUrl)
+                                .contentType("application/json")
+                                .content(jsonContent))
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors").value("name: must not be blank"));
+    }
+
 }
+
