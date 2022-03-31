@@ -28,7 +28,6 @@ public class VaccineForm {
     private int dosesAmount;
 
     @ApiModelProperty(value = "Vaccine created at.")
-    @NotNull
     @CreationTimestamp
     private LocalDate createdAt;
 
