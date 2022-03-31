@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -49,7 +50,7 @@ public class VaccineController {
             @ApiResponse(code = 201, message = "Return created vaccine.")
     })
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<VaccineResponse> createVaccine(@RequestBody VaccineForm vaccineForm) {
+    public ResponseEntity<VaccineResponse> createVaccine(@RequestBody @Valid VaccineForm vaccineForm) {
         Vaccine vaccine = mapStructMapper.vaccineFormToVaccine(vaccineForm);
         vaccineService.save(vaccine);
         return new ResponseEntity<>(mapStructMapper.vaccineToVaccineResponse(vaccine), HttpStatus.CREATED);
