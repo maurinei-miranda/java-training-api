@@ -21,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -126,6 +125,7 @@ public class VaccineControllerTest {
                 3,
                 localDate,
                 localDate);
+
         String jsonContent = objectMapper.writeValueAsString(vaccineForm);
 
         mockMvc.perform(
@@ -137,5 +137,75 @@ public class VaccineControllerTest {
                 .andExpect(jsonPath("$.errors").value("name: must not be blank"));
     }
 
+    @Test
+    @DisplayName(value = "PUT /vaccines update a vaccine success")
+    public void putUpdateVaccine_Return200() throws Exception {
+        LocalDate localDate = LocalDate.parse("2022-04-03");
+        VaccineForm vaccineForm = new VaccineForm("Pfizer",
+                "Covid-19",
+                30,
+                5,
+                localDate,
+                localDate);
+
+        VaccineResponse vaccineResponse = new VaccineResponse("Pfizer",
+                "Covid-19",
+                "N/A",
+                30,
+                5,
+                localDate,
+                localDate);
+
+
+        String jsonRequest = objectMapper.writeValueAsString(vaccineForm);
+        String jsonResponse = objectMapper.writeValueAsString(vaccineResponse);
+
+
+        Vaccine vaccine = mapStructMapper.vaccineFormToVaccine(vaccineForm);
+        doReturn(vaccine).when(vaccineService).findByName("Pfizer");
+
+        mockMvc.perform(
+                        put(vaccinesUrl + vaccine.getName())
+                                .contentType("application/json")
+                                .content(jsonRequest))
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(jsonResponse));
+    }
+
+    @Test
+    @DisplayName(value = "PUT /vaccines update a vaccine fail")
+    public void putUpdateVaccine_Return404() throws Exception {
+        LocalDate localDate = LocalDate.parse("2022-04-03");
+        VaccineForm vaccineForm = new VaccineForm("Pfizer",
+                "",
+                30,
+                5,
+                localDate,
+                localDate);
+
+        String jsonRequest = objectMapper.writeValueAsString(vaccineForm);
+
+        Vaccine vaccine = new Vaccine("Pfizer",
+                "Covid-19",
+                "N/A",
+                30,
+                5,
+                localDate,
+                localDate);
+
+        doReturn(vaccine).when(vaccineService).findByName("Pfizer");
+
+
+        mockMvc.perform(
+                        put(vaccinesUrl + vaccineForm.getName())
+                                .contentType("application/json")
+                                .content(jsonRequest)
+                )
+                .andExpect(content().contentType("application/json"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors").value("diseaseName: must not be blank"));
+
+    }
 }
 
