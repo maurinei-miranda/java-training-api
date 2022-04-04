@@ -61,10 +61,10 @@ public class VaccineController {
             @ApiResponse(code = 404, message = "Vaccine not found.")
     })
     @PutMapping(value = "/{name}", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<VaccineResponse> updateVaccine(@PathVariable String name, @RequestBody VaccineForm vaccineForm) {
+    public ResponseEntity<VaccineResponse> updateVaccine(@PathVariable String name, @RequestBody @Valid VaccineForm vaccineForm) {
         Vaccine vaccine = mapStructMapper.vaccineFormToVaccine(vaccineForm);
-        Vaccine newVaccine = vaccineService.update(name, vaccine);
-        return new ResponseEntity<>(mapStructMapper.vaccineToVaccineResponse(newVaccine), HttpStatus.OK);
+        vaccineService.update(name, vaccine);
+        return new ResponseEntity<>(mapStructMapper.vaccineToVaccineResponse(vaccine), HttpStatus.OK);
 
     }
 

@@ -37,7 +37,7 @@ public class VaccineService extends ApplicationExceptionHandler {
         vaccineRepository.save(vaccine);
     }
 
-    public Vaccine update(String vaccineName, @NotNull Vaccine vaccine) {
+    public void update(String vaccineName, @NotNull Vaccine vaccine) {
         Disease disease = diseaseService.findByName(vaccine.getDiseaseName())
                 .orElseThrow(() -> new NoSuchElementException("Disease '" + vaccine.getDiseaseName() + "' not found "));
 
@@ -49,7 +49,6 @@ public class VaccineService extends ApplicationExceptionHandler {
         oldVaccine.setDiseaseDescription(disease.getDiseaseDescription());
         oldVaccine.setMinimumAge(vaccine.getMinimumAge());
         vaccineRepository.save(oldVaccine);
-        return oldVaccine;
     }
 
     public void delete(Vaccine vaccine) {
