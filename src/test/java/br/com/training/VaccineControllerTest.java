@@ -184,8 +184,6 @@ public class VaccineControllerTest {
                 localDate,
                 localDate);
 
-        String jsonRequest = objectMapper.writeValueAsString(vaccineForm);
-
         Vaccine vaccine = new Vaccine("Pfizer",
                 "Covid-19",
                 "N/A",
@@ -194,9 +192,8 @@ public class VaccineControllerTest {
                 localDate,
                 localDate);
 
+        String jsonRequest = objectMapper.writeValueAsString(vaccineForm);
         doReturn(vaccine).when(vaccineService).findByName("Pfizer");
-
-
         mockMvc.perform(
                         put(vaccinesUrl + vaccineForm.getName())
                                 .contentType("application/json")
@@ -206,6 +203,29 @@ public class VaccineControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors").value("diseaseName: must not be blank"));
 
+    }
+
+    @Test
+    @DisplayName(value = "DELETE /vaccines - delete a vaccine")
+    public void deleteVaccine_Return204() throws Exception {
+        LocalDate localDate = LocalDate.parse("2022-04-03");
+        Vaccine vaccine = new Vaccine("Pfizer",
+                "Covid-19",
+                "N/A",
+                30,
+                5,
+                localDate,
+                localDate);
+
+
+        doReturn(vaccine).when(vaccineService).findByName(vaccine.getName());
+        VaccineResponse vaccineResponse = mapStructMapper.vaccineToVaccineResponse(vaccine);
+        String jsonResponse = objectMapper.writeValueAsString(vaccineResponse);
+        mockMvc.perform(
+                        delete(vaccinesUrl + vaccine.getName())
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().string(jsonResponse));
     }
 }
 
