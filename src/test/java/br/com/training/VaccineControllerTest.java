@@ -19,8 +19,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -206,7 +208,7 @@ public class VaccineControllerTest {
     }
 
     @Test
-    @DisplayName(value = "DELETE /vaccines - delete a vaccine")
+    @DisplayName(value = "DELETE /vaccines - delete a vaccine success")
     public void deleteVaccine_Return204() throws Exception {
         LocalDate localDate = LocalDate.parse("2022-04-03");
         Vaccine vaccine = new Vaccine("Pfizer",
@@ -226,6 +228,19 @@ public class VaccineControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().string(jsonResponse));
+    }
+
+    @Test
+    @DisplayName(value = "DELETE /vaccines - delete a vaccine fail - not found")
+    public void deleteVaccine_Return404() throws Exception {
+        String vaccineName = "Pfizer";
+        NoSuchElementException ex = new NoSuchElementException("Vaccine '" + vaccineName + "' not found");
+        doThrow(ex).when(vaccineService).findByName(vaccineName);
+        mockMvc.perform(
+                        delete(vaccinesUrl + vaccineName)
+                )
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.errors").value("Vaccine 'Pfizer' not found"));
     }
 }
 
