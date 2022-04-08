@@ -46,7 +46,7 @@ public class ApplyVaccineService extends ApplicationExceptionHandler {
     }
 
     // Constructor method
-    public ApplyVaccine defineApplyVaccine(ApplyVaccineForm applyVaccineForm) {
+    public ApplyVaccine buildApplyVaccine(ApplyVaccineForm applyVaccineForm) {
         ApplyVaccine applyVaccine = new ApplyVaccine();
 
         User user = userService.findByCpf(applyVaccineForm.getUserCpf());
@@ -93,14 +93,4 @@ public class ApplyVaccineService extends ApplicationExceptionHandler {
         }
     }
 
-
-//    public Optional<ApplyVaccine> findById(Long id){
-//        return applyVaccineRepository.findById(id);
-//    }
-//
-//    public void deleteAppliedVaccine(Long id){
-//        Optional<ApplyVaccine> appliedVaccine = findById(id);
-//        applyVaccineRepository.delete(appliedVaccine.get());
-//
-//    }
 }

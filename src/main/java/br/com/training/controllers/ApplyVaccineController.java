@@ -39,7 +39,7 @@ public class ApplyVaccineController {
 
     @PostMapping()
     public ResponseEntity<ApplyVaccineResponse> save(@RequestBody ApplyVaccineForm applyVaccineForm) {
-        ApplyVaccine applyVaccine = applyVaccineService.defineApplyVaccine(applyVaccineForm);
+        ApplyVaccine applyVaccine = applyVaccineService.buildApplyVaccine(applyVaccineForm);
         applyVaccineService.save(applyVaccine);
         return new ResponseEntity<>(mapStructMapper.applyVaccineToApplyResponse(applyVaccine), HttpStatus.CREATED);
     }
