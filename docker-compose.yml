@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  db:
+    image: mysql/mysql-server
+    environment:
+      MYSQL_ROOT_PASSWORD: "rootpass"
+      MYSQL_USER: "myuser"
+      MYSQL_PASSWORD: "userpass"
+      MYSQL_DATABASE: apidata
+    ports:
+      - "3306:3306"
+    volumes:
+      - .docker/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      - /mysql:/var/lib/mysql
