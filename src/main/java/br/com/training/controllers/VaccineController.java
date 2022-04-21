@@ -27,7 +27,7 @@ public class VaccineController {
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return a list of vaccines"),
-            @ApiResponse(code = 404, message = "Vaccine not found"),
+            @ApiResponse(code = 500, message = "Some unmapped exception occurred.")
     })
     @GetMapping(produces = "application/json")
     public ResponseEntity<List<VaccineResponse>> findAllVaccines() {
@@ -38,7 +38,8 @@ public class VaccineController {
 
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return a vaccine."),
-            @ApiResponse(code = 404, message = "Vaccine not found.")
+            @ApiResponse(code = 404, message = "Vaccine not found."),
+            @ApiResponse(code = 500, message = "Some unmapped exception occurred.")
     })
     @GetMapping(value = "/{name}", produces = "application/json")
     public ResponseEntity<VaccineResponse> findByName(@PathVariable String name) {
@@ -47,7 +48,9 @@ public class VaccineController {
     }
 
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Return created vaccine.")
+            @ApiResponse(code = 201, message = "Vaccine created successfully. Return created vaccine data."),
+            @ApiResponse(code = 400, message = "Invalid request. Return details of occurred exception."),
+            @ApiResponse(code = 500, message = "Some unmapped exception occurred.")
     })
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<VaccineResponse> createVaccine(@RequestBody @Valid VaccineForm vaccineForm) {
@@ -57,8 +60,9 @@ public class VaccineController {
     }
 
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Vaccine updated."),
-            @ApiResponse(code = 404, message = "Vaccine not found.")
+            @ApiResponse(code = 200, message = "Vaccine updated successfully. Return updated vaccine data."),
+            @ApiResponse(code = 400, message = "Invalid request. Return details of occurred exception."),
+            @ApiResponse(code = 500, message = "Some unmapped exception occurred.")
     })
     @PutMapping(value = "/{name}", produces = "application/json", consumes = "application/json")
     public ResponseEntity<VaccineResponse> updateVaccine(@PathVariable String name, @RequestBody @Valid VaccineForm vaccineForm) {
@@ -68,11 +72,11 @@ public class VaccineController {
 
     }
 
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 204, message = "Vaccine deleted")
-            }
-    )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Vaccine deleted successfully. Return deleted vaccine data."),
+            @ApiResponse(code = 404, message = "Vaccine not found."),
+            @ApiResponse(code = 500, message = "Some unmapped exception occurred.")
+    })
     @DeleteMapping(value = "/{name}", produces = "application/json")
     public ResponseEntity<VaccineResponse> deleteVaccine(@PathVariable String name) {
         Vaccine vaccine = vaccineService.findByName(name);
