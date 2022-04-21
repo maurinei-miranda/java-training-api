@@ -18,15 +18,13 @@ public interface MapStructMapper {
 
     List<UserResponse> userListToUserResponse(List<User> userList);
 
-    // TODO new Interface
     Vaccine vaccineFormToVaccine(VaccineForm vaccineForm);
 
     VaccineResponse vaccineToVaccineResponse(Vaccine vaccine);
 
     List<VaccineResponse> vaccineListToVaccineResponseList(List<Vaccine> vaccineList);
 
-    // TODO new Interface
     ApplyVaccineResponse applyVaccineToApplyResponse(ApplyVaccine applyVaccine);
 
-    List<ApplyVaccineResponse> map(List<ApplyVaccine> applyVaccinesList);
+    List<ApplyVaccineResponse> applyVaccineListToResponseList(List<ApplyVaccine> applyVaccinesList);
 }

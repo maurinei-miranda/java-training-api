@@ -90,13 +90,13 @@ public class MapStructMapperImpl implements MapStructMapper {
         return listResponse;
     }
 
-    public List<ApplyVaccineResponse> map(List<ApplyVaccine> applieds) {
-        if (applieds == null) {
+    public List<ApplyVaccineResponse> applyVaccineListToResponseList(List<ApplyVaccine> appliedList) {
+        if (appliedList == null) {
             return null;
         }
 
-        List<ApplyVaccineResponse> list = new ArrayList<ApplyVaccineResponse>(applieds.size());
-        for (ApplyVaccine item: applieds) {
+        List<ApplyVaccineResponse> list = new ArrayList<>(appliedList.size());
+        for (ApplyVaccine item: appliedList) {
             list.add(applyVaccineToApplyResponse(item));
         }
         return list;
