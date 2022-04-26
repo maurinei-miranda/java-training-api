@@ -40,8 +40,8 @@ public class ApplyVaccineController {
             @ApiResponse(code = 400, message = "Invalid request. Return details of occurred exception."),
             @ApiResponse(code = 500, message = "Some unmapped exception occurred.")
     })
-    @GetMapping(produces = "application/json")
-    public ResponseEntity<List<ApplyVaccineResponse>> findByUserCpf(@RequestParam String cpf) {
+    @GetMapping(value = "/{cpf}", produces = "application/json")
+    public ResponseEntity<List<ApplyVaccineResponse>> findByUserCpf(@PathVariable String cpf) {
         List<ApplyVaccine> list = applyVaccineService.findByUserCpf(cpf);
         List<ApplyVaccineResponse> applyVaccineResponseList = mapStructMapper.applyVaccineListToResponseList(list);
         return new ResponseEntity<>(applyVaccineResponseList, HttpStatus.OK);
@@ -59,14 +59,15 @@ public class ApplyVaccineController {
         return new ResponseEntity<>(mapStructMapper.applyVaccineToApplyResponse(applyVaccine), HttpStatus.CREATED);
     }
 
-    //TODO implement update applyVaccine
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Vaccine application successfully updated. Returns application data."),
             @ApiResponse(code = 400, message = "Invalid request. Return details of occurred exception."),
             @ApiResponse(code = 500, message = "Some unmapped exception occurred.")
     })
-    public ResponseEntity<ApplyVaccineResponse> update(@RequestBody ApplyVaccineForm applyVaccineForm) {
-        return new ResponseEntity(HttpStatus.OK);
+    @PutMapping(value = "/{cpf}/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<ApplyVaccineResponse> update(@PathVariable String cpf, @PathVariable int id, @RequestBody ApplyVaccineForm applyVaccineForm) {
+        ApplyVaccine applyVaccine = applyVaccineService.update(cpf, id, applyVaccineForm);
+        return new ResponseEntity<>(mapStructMapper.applyVaccineToApplyResponse(applyVaccine), HttpStatus.OK);
     }
 
     @ApiResponses(value = {
