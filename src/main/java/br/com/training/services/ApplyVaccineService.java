@@ -41,11 +41,23 @@ public class ApplyVaccineService extends ApplicationExceptionHandler {
         applyVaccineRepository.save(applyVaccine);
     }
 
+    public ApplyVaccine update(String cpf, int id, ApplyVaccineForm applyVaccineForm) {
+        List<ApplyVaccine> applyVaccineList = findByUserCpf(cpf);
+        ApplyVaccine oldApplyVaccine = applyVaccineList.get(id - 1);
+        applyVaccineRepository.delete(oldApplyVaccine);
+        ApplyVaccine newBuild = buildApplyVaccine(applyVaccineForm);
+        oldApplyVaccine.setDate(newBuild.getDate());
+        oldApplyVaccine.setUser(newBuild.getUser());
+        oldApplyVaccine.setVaccine(newBuild.getVaccine());
+        applyVaccineRepository.save(oldApplyVaccine);
+        return oldApplyVaccine;
+    }
+
     public void delete(ApplyVaccine applyVaccine) {
         applyVaccineRepository.delete(applyVaccine);
     }
 
-    // Constructor method
+    // Builder method
     public ApplyVaccine buildApplyVaccine(ApplyVaccineForm applyVaccineForm) {
         ApplyVaccine applyVaccine = new ApplyVaccine();
 
@@ -75,8 +87,8 @@ public class ApplyVaccineService extends ApplicationExceptionHandler {
             LocalDate segundaDt = applyVaccine.getDate();
 
             Period periodo = Period.between(primeiraDt, segundaDt);
-            int dias = periodo.getDays();
-            int totalDias = (periodo.getMonths() * 30) + dias;
+            int dias = Math.abs(periodo.getDays());
+            int totalDias = (Math.abs(periodo.getMonths()) * 30) + dias;
             if (totalDias <= 30) {
                 throw new VaccineRestrictions("Usuário já recebeu uma dose dessa vacina nos ultimos 30 dias.");
             }
