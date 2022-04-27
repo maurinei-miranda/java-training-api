@@ -1,6 +1,5 @@
 package br.com.training.exceptions;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,22 +23,22 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     public static String cpfNotFoundMessage = "cpf not found: ";
     public static String vaccineAlreadyExistMessage = "vaccine already exist";
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiError> resourceViolation(ConstraintViolationException ex) {
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> resourceViolation(DataIntegrityViolationException ex) {
         List<String> errors = new ArrayList<>();
-        final String cpfAlreadyExist = "user.UK_2qv8vmk5wxu215bevli5derq";
-        final String emailAlreadyExist = "user.UK_ob8kqyqqgmefl0aco34akdtpe";
-        final String vaccineAlreadyExist = "vaccine.UK_i7tje2xf0ksd3mdasoxq6qkfb";
+        final String cpfConstraint = "user.uc_user_cpf";
+        final String emailConstraint = "user.uc_user_email";
+        final String vaccineConstraint = "vaccine.uc_vaccine_name";
 
-        if (ex.getConstraintName().contains(cpfAlreadyExist)) {
+        if (ex.getMostSpecificCause().getMessage().contains(cpfConstraint)) {
             errors.add(cpfAlreadyExistMessage);
-        } else if (ex.getConstraintName().contains(emailAlreadyExist)) {
+        } else if (ex.getMostSpecificCause().getMessage().contains(emailConstraint)) {
             errors.add(emailErrorMessage);
-        } else if (ex.getConstraintName().contains(vaccineAlreadyExist)) {
+        } else if (ex.getMostSpecificCause().getMessage().contains(vaccineConstraint)) {
             errors.add(vaccineAlreadyExistMessage);
         } else {
             errors.add("Exception not mapped");
-            errors.add(ex.getConstraintName());
+            errors.add(ex.getMostSpecificCause().getMessage());
         }
 
         ApiError apiError = new ApiError(HttpStatus.CONFLICT, errors, System.currentTimeMillis());
@@ -53,21 +52,10 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     }
 
     @ExceptionHandler(VaccineRestrictions.class)
-    public ResponseEntity<ApiError> restrictionFound(VaccineRestrictions ex){
+    public ResponseEntity<ApiError> restrictionFound(VaccineRestrictions ex) {
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), System.currentTimeMillis());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
-
-//    @ExceptionHandler(DataIntegrityViolationException.class)
-//    public ResponseEntity<ApiError> duplicateEntry(DataIntegrityViolationException ex, String attr){
-//        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Entrada duplicada", System.currentTimeMillis());
-//        ex.getCause().getMessage();
-//        String detailMessage = ex.getCause().getCause().getMessage();
-//        if (detailMessage.contains("Duplicate entry for key user")) {
-//
-//        }
-//        return ResponseEntity.status(apiError.getStatus()).body(apiError);
-//    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
