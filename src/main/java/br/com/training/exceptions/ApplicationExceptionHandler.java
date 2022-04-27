@@ -1,6 +1,7 @@
 package br.com.training.exceptions;
 
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,9 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> resourceViolation(ConstraintViolationException ex) {
         List<String> errors = new ArrayList<>();
-        final String cpfAlreadyExist = "PUBLIC.UK_2QV8VMK5WXU215BEVLI5DERQ_INDEX_2 ON PUBLIC.USER(CPF)";
-        final String emailAlreadyExist = "PUBLIC.UK_OB8KQYQQGMEFL0ACO34AKDTPE_INDEX_2 ON PUBLIC.USER(EMAIL)";
-        final String vaccineAlreadyExist = "PUBLIC.UK_I7TJE2XF0KSD3MDASOXQ6QKFB_INDEX_3 ON PUBLIC.VACCINE(NAME)";
+        final String cpfAlreadyExist = "user.UK_2qv8vmk5wxu215bevli5derq";
+        final String emailAlreadyExist = "user.UK_ob8kqyqqgmefl0aco34akdtpe";
+        final String vaccineAlreadyExist = "vaccine.UK_i7tje2xf0ksd3mdasoxq6qkfb";
 
         if (ex.getConstraintName().contains(cpfAlreadyExist)) {
             errors.add(cpfAlreadyExistMessage);
@@ -37,6 +38,7 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         } else if (ex.getConstraintName().contains(vaccineAlreadyExist)) {
             errors.add(vaccineAlreadyExistMessage);
         } else {
+            errors.add("Exception not mapped");
             errors.add(ex.getConstraintName());
         }
 
@@ -55,6 +57,17 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, ex.getMessage(), System.currentTimeMillis());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
+
+//    @ExceptionHandler(DataIntegrityViolationException.class)
+//    public ResponseEntity<ApiError> duplicateEntry(DataIntegrityViolationException ex, String attr){
+//        ApiError apiError = new ApiError(HttpStatus.CONFLICT, "Entrada duplicada", System.currentTimeMillis());
+//        ex.getCause().getMessage();
+//        String detailMessage = ex.getCause().getCause().getMessage();
+//        if (detailMessage.contains("Duplicate entry for key user")) {
+//
+//        }
+//        return ResponseEntity.status(apiError.getStatus()).body(apiError);
+//    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
